@@ -4,7 +4,8 @@ import requests
 
 url = "http://192.168.1.3:8080/shot.jpg"
 face_cascade = cv.CascadeClassifier("haarcascade_frontalface_default.xml")
-buffer = np.zeros((10,4), int)
+buffer = np.zeros((10, 4), int)
+
 
 def object_detect(img, cascade):
     gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
@@ -27,13 +28,21 @@ if __name__ == '__main__':
         # if not ret:
         #     print("Can't receive frame (stream end?). Exiting ...")
         #     break
-        frame = requests.get(url)
-        object_detect(frame, face_cascade)
+        try:
+            r = requests.get(url)
+            r_bytes = r.content
+            frame_arr = np.array(bytearray(r_bytes))
+            frame = cv.imdecode(frame_arr, cv.IMREAD_UNCHANGED)
+            object_detect(frame, face_cascade)
 
-        cv.imshow("frame",frame)
+            cv.imshow("frame", frame)
+        except Exception as e:
+            print(e)
+            print("connection stopped")
+            exit(1)
 
         if cv.waitKey(16) == ord('q'):
             break
     # When everything done, release the capture
-#    cap.release()
+    #    cap.release()
     cv.destroyAllWindows()
