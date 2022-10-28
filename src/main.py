@@ -1,10 +1,13 @@
 import cv2 as cv
 import numpy as np
-import requests
+import socket
 
 url = "http://192.168.1.3:8080/shot.jpg"
 face_cascade = cv.CascadeClassifier("haarcascade_frontalface_default.xml")
 buffer = np.zeros((10, 4), int)
+
+ip_robot = "127.0.0.1"
+port = 5500
 
 
 def object_detect(img, cascade):
@@ -16,6 +19,10 @@ def object_detect(img, cascade):
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    addr = (ip_robot, port)
+    s.bind(addr)
+    print("server up")
     # cap = cv.VideoCapture("https://192.168.1.3:8080")
     # if not cap.isOpened():
     #     print("Cannot open camera")
@@ -29,9 +36,9 @@ if __name__ == '__main__':
         #     print("Can't receive frame (stream end?). Exiting ...")
         #     break
         try:
-            r = requests.get(url)
-            r_bytes = r.content
-            frame_arr = np.array(bytearray(r_bytes))
+            data, address = s.recvfrom(1048576)
+            print("got data")
+            frame_arr = np.array(bytearray(data))
             frame = cv.imdecode(frame_arr, cv.IMREAD_UNCHANGED)
             object_detect(frame, face_cascade)
 
