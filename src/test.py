@@ -1,16 +1,21 @@
+import matplotlib
+import torch
+import cv2
+
+
+import matplotlib_inline
 import numpy as np
-import cv2 as cv
+import matplotlib
+matplotlib.use('TkAgg')
 
-# blank = np.zeros((800,500,4), dtype='uint8')
-# blank[:] = (0,255,0,0.1)
-# cv.imshow('b',blank)
-# cv.waitKey(1000)
 
-face_cascade = cv.CascadeClassifier("haarcascade_frontalface_default.xml")
-img = cv.imread("images.jpg")
-gray = cv.cvtColor(img,cv.COLOR_BGR2GRAY)
-faces = face_cascade.detectMultiScale(gray,1.5)
-for (x,y,w,h) in faces:
-    cv.rectangle(img,(x,y),(x+w,y+h), (255,0,0),2)
-cv.imshow("img",img)
-cv.waitKey(0)
+model = torch.hub.load('ultralytics/yolov5', 'custom', path='./best.pt')
+img = cv2.imread("tmpImg21.jpg")
+# cv2.imshow("o",img)
+# cv2.waitKey(0)
+result = model(img)
+result.show()
+
+
+  #  cv2.rectangle(img, (x, y), (x + w, y + h), (255, 0, 0), 2)
+

@@ -1,13 +1,16 @@
 import cv2 as cv
 import numpy as np
 import socket
+import torch
 
 url = "http://192.168.1.3:8080/shot.jpg"
 face_cascade = cv.CascadeClassifier("haarcascade_frontalface_default.xml")
-buffer = np.zeros((10, 4), int)
+# buffer = np.zeros((10, 4), int)
 
 ip_robot = "127.0.0.1"
 port = 5500
+
+model = torch.hub.load('ultralytics/yolov5', 'custom', path='./best.pt')
 
 
 def object_detect(img, cascade):
@@ -40,7 +43,10 @@ if __name__ == '__main__':
             print("got data")
             frame_arr = np.array(bytearray(data))
             frame = cv.imdecode(frame_arr, cv.IMREAD_UNCHANGED)
-            object_detect(frame, face_cascade)
+            # object_detect(frame, face_cascade)
+            result = model(frame)
+            print(result)
+
 
             cv.imshow("frame", frame)
         except Exception as e:
@@ -50,6 +56,4 @@ if __name__ == '__main__':
 
         if cv.waitKey(16) == ord('q'):
             break
-    # When everything done, release the capture
-    #    cap.release()
     cv.destroyAllWindows()
