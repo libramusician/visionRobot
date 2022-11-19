@@ -10,12 +10,12 @@ port = 8000
 
 class WSSender:
     def __init__(self):
-        self.observers = []
+        self.observers = set()
         self.frame = None
 
     async def handler(self, link):
         print(type(link))
-        self.observers.append(link)
+        self.observers.add(link)
         while True:
             data = await link.recv()
             print(data)

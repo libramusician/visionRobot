@@ -24,6 +24,10 @@ def run():
     receiver = UDPReceiver()
     detector = ManualDetector()
     sender = UDPSender()
+
+    # uncomment to send initial hello
+    #sender.send(1)
+
     bbox: BoundingBox = detector.detect(receiver.receive())
     tracker: cv2.TrackerKCF = cv2.TrackerKCF_create()
     tracker.init(receiver.current_frame, (bbox.get_xywh()))
@@ -39,7 +43,7 @@ def run():
 
             region = analysis(bbox)
         else:
-            print("target lost")
+            #print("target lost")
             region = -1
         sender.send(region)
 

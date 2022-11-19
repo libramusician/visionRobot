@@ -16,6 +16,10 @@ class UDPReceiver():
     def receive(self) -> numpy.ndarray:
         try:
             data, address = self.s.recvfrom(1048576)
+
+            # uncomment to skip size packet
+            #data, address = self.s.recvfrom(1048576)
+
             # print("got data")
             frame_arr = numpy.array(bytearray(data))
             self.current_frame = cv2.imdecode(frame_arr, cv2.IMREAD_UNCHANGED)

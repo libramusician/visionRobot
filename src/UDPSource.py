@@ -20,11 +20,11 @@ class UDPsource():
             frame = self.receiver.receive()
             frame2 = cv2.resize(frame, (320,240))
             ok, frame_bytes = cv2.imencode(".jpg", frame2)
-            print(len(frame_bytes))
+            #print(len(frame_bytes))
             self.s.sendto(frame_bytes, (self.ip, self.send_port))
-            print("msg sent")
+            #print("msg sent")
             response, addr = self.s2.recvfrom(4)
-            print("msg recv")
+            #print("msg recv")
             print(response)
 
 if __name__=='__main__':
