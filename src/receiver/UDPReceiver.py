@@ -7,7 +7,7 @@ import numpy
 class UDPReceiver():
     def __init__(self):
         ip = "127.0.0.1"
-        receive_port = 5000
+        receive_port = 5002
         self.s = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
         self.s.bind((ip,receive_port))
         self.current_frame = None

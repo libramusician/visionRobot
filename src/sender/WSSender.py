@@ -17,10 +17,13 @@ class WSSender:
         print(type(link))
         self.observers.add(link)
         while True:
-            data = await link.recv()
-            print(data)
-            # for item in self.observers:
-            #     await item.send(self.frame)
+            try:
+                data = await link.recv()
+                print(data)
+            except websockets.ConnectionClosed:
+                print("connection closed")
+                self.observers.remove(link)
+                break
 
     async def send(self, message):
         for item in self.observers:

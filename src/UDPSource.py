@@ -9,7 +9,7 @@ class UDPsource():
     def __init__(self, upper_receiver:CameraReceiver):
         self.receiver = upper_receiver
         self.ip = "127.0.0.1"
-        self.send_port = 5000
+        self.send_port = 5002
         self.receive_port = 5001
         self.s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.s2 = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
