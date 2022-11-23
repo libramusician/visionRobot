@@ -2,11 +2,11 @@ import socket
 
 
 class UDPSender():
-    def __init__(self):
-        ip = "127.0.0.1"
-        send_port = 5001
-        self.addr = (ip,send_port)
+    def __init__(self, addr):
+        # create a UDP socket
+        self.addr = addr
         self.s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
-    def send(self, response:int):
-        self.s.sendto(response.to_bytes(4,'big', signed=True), self.addr)
+    # send a string message to address
+    def send(self, response:str):
+        self.s.sendto(response.encode(), self.addr)

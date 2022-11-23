@@ -15,27 +15,34 @@ from src.sender.WSSender import WSSender
 
 
 # receiver = CameraReceiver()
+ctraddr = ("127.0.0.1", 8002)
+#frame_addr = ("192.168.137.24", 6000)
+frame_addr = ("127.0.0.1", 6000)
 
 
 def run():
-    print("1")
-    ui_sender = WSSender()
-    threading.Thread(target=ui_sender.run, daemon=True).start()
+    #ui_sender = WSSender()
+    #threading.Thread(target=ui_sender.run, daemon=True).start()
+
     receiver = UDPReceiver()
     detector = ManualDetector()
-    sender = UDPSender()
+    sender = UDPSender(ctraddr)
 
-    # uncomment to send initial hello
-    #sender.send(1)
-
-    bbox: BoundingBox = detector.detect(receiver.receive())
+    # send initial hello
+    receiver.connect(frame_addr)
+    print("waiting for first frame...")
+    frame = receiver.receive()
+    print("received first frame")
+    bbox: BoundingBox = detector.detect(frame)
     tracker: cv2.TrackerKCF = cv2.TrackerKCF_create()
     tracker.init(receiver.current_frame, (bbox.get_xywh()))
     cv2.destroyAllWindows()
     print("tracker ready")
-    sender.send(-1)
+    # the control code for first frame is useless, so send no operation
+    sender.send("0")
     while True:
         frame = receiver.receive()
+        print("received second frame")
         ok, bbox_n = tracker.update(frame)
         if ok:
             bbox.relocate(bbox_n)
@@ -43,13 +50,14 @@ def run():
 
             region = analysis(bbox)
         else:
-            #print("target lost")
-            region = -1
+            region = "0"
+        print("send region")
         sender.send(region)
+
 
         ok, frame_bytes = cv2.imencode(".jpg", frame)
         frame_str = frame_bytes.tobytes()
-        asyncio.run(ui_sender.send(frame_str))
+        #asyncio.run(ui_sender.send(frame_str))
 
         cv2.imshow("frame", frame)
         if cv2.waitKey(16) == ord('q'):
