@@ -1,4 +1,4 @@
-from BoundingBox import BoundingBox
+from boundingBox import BoundingBox
 
 WIDTH = 320
 HEIGHT = 240

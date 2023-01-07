@@ -10,3 +10,6 @@ class UDPSender():
     # send a string message to address
     def send(self, response:str):
         self.s.sendto(response.encode(), self.addr)
+
+    def close(self):
+        self.s.close()

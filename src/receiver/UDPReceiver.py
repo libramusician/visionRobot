@@ -29,3 +29,6 @@ class UDPReceiver():
 
     def connect(self, addr):
         self.s.sendto("hello".encode(), addr)
+
+    def close(self):
+        self.s.close()
