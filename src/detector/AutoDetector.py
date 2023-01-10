@@ -5,7 +5,7 @@ import numpy
 from src.boundingBox import BoundingBox
 
 confThreshold = 0.5  # Confidence threshold
-nmsThreshold = 0.4  # Non-maximum suppression threshold
+nmsThreshold = 0.1  # Non-maximum suppression threshold
 inpWidth = 416  # Width of network's input image
 inpHeight = 416  # Height of network's input image
 counter = 0
@@ -63,6 +63,7 @@ def post_process(frame, outs):
         bbox = BoundingBox((left, top, width, height))
         result_boxes.append(bbox)
         # drawPred(classIds[i], confidences[i], left, top, left + width, top + height)
+    print(str(len(result_boxes)) + "result detected")
     return result_boxes
 
 

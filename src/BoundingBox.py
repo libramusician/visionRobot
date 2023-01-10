@@ -3,7 +3,7 @@ import numpy
 
 GREEN = (0, 255, 0)
 THICKNESS = 2
-IOU_THRESHOLD = 0.9
+IOU_THRESHOLD = 0.5
 
 
 def draw(bbox, frame: numpy.ndarray):
@@ -39,18 +39,25 @@ class BoundingBox:
         self.h = h
 
     def is_tracked_by(self, trackers, frame):
+        confidences = {}
         tracker: cv2.TrackerKCF
+        print(trackers)
         for tracker in trackers:
             ok, bbox = tracker.update(frame)
             iou_ratio = iou(self, BoundingBox(bbox))
+            confidences[iou_ratio] = tracker
             # TODO: simple, use max to be more accurate
-            if iou_ratio > IOU_THRESHOLD:
-                return tracker
+        if len(confidences) == 0:
+            return None
+        else:
+            best = max(confidences)
+            if best > IOU_THRESHOLD:
+                return confidences[best]
+            else:
+                return None
 
 
 def iou(a: BoundingBox, b: BoundingBox):
-    print(a)
-    print(b)
     area_a = a.w * a.h
     area_b = b.w * b.h
     w = min(b.x + b.w, a.x + a.w) - max(a.x, b.x)

@@ -30,6 +30,7 @@ class App:
         self.sender = UDPSender(ctraddr)
 
         self.trackers = []
+        self.mode_switch_counter = 0
         self.detecting = Detecting(self)
         self.tracking = Tracking(self)
         self.current_state = self.detecting
