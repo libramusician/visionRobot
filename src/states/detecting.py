@@ -5,6 +5,9 @@ from boundingBox import BoundingBox, draw
 
 
 class Detecting(ServerState):
+    def mode_switch(self, frame):
+        pass
+
     def receive(self, frame):
         bboxes = self.model.detector.detect(frame)
         # detection failed

@@ -5,6 +5,9 @@ from boundingBox import draw
 
 
 class Tracking(ServerState):
+    def mode_switch(self, frame):
+        pass
+
     def receive(self, frame):
         tracker: cv2.TrackerKCF
         for tracker in self.model.trackers:

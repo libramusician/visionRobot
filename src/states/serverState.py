@@ -13,3 +13,7 @@ class ServerState(ABC):
     @abstractmethod
     def receive(self, frame):
         pass
+
+    @abstractmethod
+    def mode_switch(self, frame):
+        pass

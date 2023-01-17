@@ -23,6 +23,14 @@ ctraddr = ("127.0.0.1", 8002)
 frame_addr = ("127.0.0.1", 6000)
 
 
+def mouse_clicked(event, x, y, flags, param):
+    print(event)
+    print(x)
+    print(y)
+    print(flags)
+    print(param)
+
+
 class App:
     def __init__(self):
         self.receiver = UDPReceiver()
@@ -34,6 +42,9 @@ class App:
         self.detecting = Detecting(self)
         self.tracking = Tracking(self)
         self.current_state = self.detecting
+        cv2.namedWindow("frame")
+        self.mouse_position = None
+        cv2.setMouseCallback("frame", mouse_clicked)
 
     def clean_up(self):
         cv2.destroyAllWindows()
