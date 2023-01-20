@@ -2,10 +2,11 @@ import cv2
 
 from states.serverState import ServerState
 from boundingBox import BoundingBox, draw
+import tracker_ex
 
 
 class Detecting(ServerState):
-    def mode_switch(self, frame):
+    def mode_switch(self):
         pass
 
     def receive(self, frame):
@@ -29,7 +30,7 @@ class Detecting(ServerState):
                 # found target also being tracked, update bounding box
                 if tracker is not None:
                     self.model.trackers.remove(tracker)
-                    new_tracker = cv2.TrackerKCF.create()
+                    new_tracker = tracker_ex.Tracker()
                     new_tracker.init(frame, (bbox.get_xywh()))
                     self.model.trackers.append(new_tracker)
                     print("tracker updated")
@@ -37,7 +38,7 @@ class Detecting(ServerState):
 
                 # target not being tracked, create a tracker to track it
                 else:
-                    tracker: cv2.TrackerKCF = cv2.TrackerKCF_create()
+                    tracker: tracker_ex.Tracker = tracker_ex.Tracker()
                     tracker.init(frame, (bbox.get_xywh()))
                     self.model.trackers.append(tracker)
                     print("tracker added")

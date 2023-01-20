@@ -16,6 +16,8 @@ from src.sender.UDPSender import UDPSender
 from src.sender.WSSender import WSSender
 from states.detecting import Detecting
 from states.tracking import Tracking
+from states.singleTracking import SingleTracking
+from states.singleDetecting import SingleDetecting
 
 # receiver = CameraReceiver()
 ctraddr = ("127.0.0.1", 8002)
@@ -23,28 +25,34 @@ ctraddr = ("127.0.0.1", 8002)
 frame_addr = ("127.0.0.1", 6000)
 
 
-def mouse_clicked(event, x, y, flags, param):
-    print(event)
-    print(x)
-    print(y)
-    print(flags)
-    print(param)
-
-
 class App:
+    """
+    fields:
+
+    """
     def __init__(self):
         self.receiver = UDPReceiver()
         self.detector = AutoDetector()
         self.sender = UDPSender(ctraddr)
 
         self.trackers = []
+        self.single_tracker = None
         self.mode_switch_counter = 0
         self.detecting = Detecting(self)
         self.tracking = Tracking(self)
+        self.single_tracking = SingleTracking(self)
+        self.single_detecting = SingleDetecting(self)
         self.current_state = self.detecting
         cv2.namedWindow("frame")
         self.mouse_position = None
-        cv2.setMouseCallback("frame", mouse_clicked)
+        cv2.setMouseCallback("frame", self.mouse_clicked)
+
+    def mouse_clicked(self, event, x, y, flags, param):
+        if event == cv2.EVENT_LBUTTONDOWN:
+            print("mouse clicked")
+            self.mouse_position = (x, y)
+            print(self.mouse_position)
+            self.current_state.mode_switch()
 
     def clean_up(self):
         cv2.destroyAllWindows()
@@ -62,7 +70,6 @@ class App:
         # print("received first frame")
 
         # bbox: BoundingBox = self.detector.detect(frame)
-        # tracker: cv2.TrackerKCF = cv2.TrackerKCF_create()
         # tracker.init(self.receiver.current_frame, (bbox.get_xywh()))
         # cv2.destroyAllWindows()
         # print("tracker ready")
@@ -82,9 +89,8 @@ class App:
             #     region = "0"
             # print("send region")
 
-            # TODO: temp always set return 0
-            region = "0"
-            self.sender.send(region)
+            if self.current_state is not self.single_tracking:
+                self.sender.send("0")
 
             ok, frame_bytes = cv2.imencode(".jpg", frame)
             frame_str = frame_bytes.tobytes()

@@ -85,7 +85,6 @@ class BoundingBox:
         """
 
         confidences = {}
-        tracker: cv2.TrackerKCF
         print(trackers)
         for tracker in trackers:
             ok, bbox = tracker.update(frame)

@@ -15,5 +15,5 @@ class ServerState(ABC):
         pass
 
     @abstractmethod
-    def mode_switch(self, frame):
+    def mode_switch(self):
         pass
