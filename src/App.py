@@ -21,7 +21,7 @@ from states.singleDetecting import SingleDetecting
 
 # receiver = CameraReceiver()
 ctraddr = ("127.0.0.1", 8002)
-# frame_addr = ("192.168.137.24", 6000)
+#frame_addr = ("192.168.137.75", 6000)
 frame_addr = ("127.0.0.1", 6000)
 
 
@@ -66,28 +66,10 @@ class App:
         # send initial hello
         self.receiver.connect(frame_addr)
         print("waiting for first frame...")
-        # frame = self.receiver.receive()
-        # print("received first frame")
-
-        # bbox: BoundingBox = self.detector.detect(frame)
-        # tracker.init(self.receiver.current_frame, (bbox.get_xywh()))
-        # cv2.destroyAllWindows()
-        # print("tracker ready")
-        # # the control code for first frame is useless, so send no operation
-        # self.sender.send("0")
 
         while True:
             frame = self.receiver.receive()
             self.current_state.receive(frame)
-            # ok, bbox_n = tracker.update(frame)
-            # if ok:
-            #     bbox.relocate(bbox_n)
-            #     bbox.draw_on(frame)
-            #
-            #     region = analysis(bbox)
-            # else:
-            #     region = "0"
-            # print("send region")
 
             if self.current_state is not self.single_tracking:
                 self.sender.send("0")

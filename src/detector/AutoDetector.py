@@ -5,14 +5,14 @@ import numpy
 from src.boundingBox import BoundingBox
 
 confThreshold = 0.5  # Confidence threshold
-nmsThreshold = 0.1  # Non-maximum suppression threshold
+nmsThreshold = 0.3  # Non-maximum suppression threshold
 inpWidth = 416  # Width of network's input image
 inpHeight = 416  # Height of network's input image
 counter = 0
 path = os.path.dirname(__file__)
 CLASS_FILE = os.path.join(path, "coco.names")
-CONFIG_FILE = os.path.join(path, "yolov3.cfg")
-WEIGHT_FILE = os.path.join(path, "yolov3.weights")
+CONFIG_FILE = os.path.join(path, "yolov3-tiny.cfg")
+WEIGHT_FILE = os.path.join(path, "yolov3-tiny.weights")
 
 
 def post_process(frame, outs):

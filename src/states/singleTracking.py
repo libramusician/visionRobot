@@ -11,6 +11,10 @@ class SingleTracking(ServerState):
     def receive(self, frame):
         tracker = self.model.single_tracker
         ok, bbox = tracker.update(frame)
+        if not ok:
+            print("target lost")
+            self.model.current_state = self.model.single_detecting
+            print("enter detecting")
         draw(bbox, frame)
         region = analysis(boundingBox.BoundingBox(bbox))
         self.model.sender.send(region)

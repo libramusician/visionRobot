@@ -23,7 +23,7 @@ class SingleDetecting(ServerState):
             # both fail, continue detect
             else:
                 return
-                # detection success, update targets
+        # detection success, update targets
         else:
             bbox: BoundingBox
             box_in_tracker = BoundingBox(tracker.bbox)
@@ -32,7 +32,7 @@ class SingleDetecting(ServerState):
                 box_iou = iou(box_in_tracker, bbox)
                 boxes_iou[box_iou] = bbox
             closest = max(boxes_iou)
-            if closest > 0.9:
+            if closest > 0.3:
                 best_box = boxes_iou[closest]
                 new_tracker = tracker_ex.Tracker()
                 new_tracker.init(frame, best_box.get_xywh())
