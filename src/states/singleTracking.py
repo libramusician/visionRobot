@@ -1,6 +1,6 @@
 from states.serverState import ServerState
 from boundingBox import draw
-from Analyzer import analysis
+from analyzer.Analyzer import analysis
 import boundingBox
 
 

@@ -6,6 +6,16 @@ THICKNESS = 2
 IOU_THRESHOLD = 0.5
 
 
+def get_center_from_box(box: tuple[int, int, int, int]):
+    """
+    This function is to
+    get the center position of a box
+    with the format (x,y,w,h)
+    :param box: bounding box with the format (x,y,w,h)
+    :return: the center with format (x, y)
+    """
+    return (box[0] + box[2] / 2), (box[1] + box[3] / 2)
+
 def draw(bbox, frame: numpy.ndarray):
     """
     This function is to
