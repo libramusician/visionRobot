@@ -1,69 +1,96 @@
-import asyncio
-
 import cv2
-import threading
 
-import websockets
-
-from src import BoundingBox
-from src.receiver.CameraReceiver import CameraReceiver
+# from detector.AutoDetector import AutoDetector
+# from src.receiver.CameraReceiver import CameraReceiver
 from src.receiver.UDPReceiver import UDPReceiver
-from src.detector.ManualDetector import ManualDetector
-from Analyzer import analysis
+# from src.detector.ManualDetector import ManualDetector
+from analyzer.Analyzer import analysis
 from src.sender.UDPSender import UDPSender
-from src.sender.WSSender import WSSender
+# from src.sender.WSSender import WSSender
+# from states.detecting import Detecting
+# from states.tracking import Tracking
+# from states.singleTracking import SingleTracking
+# from states.singleDetecting import SingleDetecting
+import detector.markerDetector2 as markerDetector
+import boundingBox
 
-
-# receiver = CameraReceiver()
 ctraddr = ("127.0.0.1", 8002)
-#frame_addr = ("192.168.137.24", 6000)
+#frame_addr = ("192.168.137.75", 6000)
 frame_addr = ("127.0.0.1", 6000)
 
 
-def run():
-    #ui_sender = WSSender()
-    #threading.Thread(target=ui_sender.run, daemon=True).start()
+class App:
+    """
+    fields:
 
-    receiver = UDPReceiver()
-    detector = ManualDetector()
-    sender = UDPSender(ctraddr)
+    """
+    def __init__(self):
+        self.receiver = UDPReceiver()
+        self.sender = UDPSender(ctraddr)
+        # self.detector = AutoDetector()
+        # self.trackers = []
 
-    # send initial hello
-    receiver.connect(frame_addr)
-    print("waiting for first frame...")
-    frame = receiver.receive()
-    print("received first frame")
-    bbox: BoundingBox = detector.detect(frame)
-    tracker: cv2.TrackerKCF = cv2.TrackerKCF_create()
-    tracker.init(receiver.current_frame, (bbox.get_xywh()))
-    cv2.destroyAllWindows()
-    print("tracker ready")
-    # the control code for first frame is useless, so send no operation
-    sender.send("0")
-    while True:
-        frame = receiver.receive()
-        print("received second frame")
-        ok, bbox_n = tracker.update(frame)
-        if ok:
-            bbox.relocate(bbox_n)
-            bbox.draw_on(frame)
+        # states
+        # self.single_tracker = None
+        # self.mode_switch_counter = 0
+        # self.detecting = Detecting(self)
+        # self.tracking = Tracking(self)
+        # self.single_tracking = SingleTracking(self)
+        # self.single_detecting = SingleDetecting(self)
+        # self.current_state = self.detecting
+        # cv2.namedWindow("frame")
+        # self.mouse_position = None
+        # cv2.setMouseCallback("frame", self.mouse_clicked)
 
-            region = analysis(bbox)
-        else:
-            region = "0"
-        print("send region")
-        sender.send(region)
+    def mouse_clicked(self, event, x, y, flags, param):
+        if event == cv2.EVENT_LBUTTONDOWN:
+            print("mouse clicked")
+            self.mouse_position = (x, y)
+            print(self.mouse_position)
+            self.current_state.mode_switch()
 
+    def clean_up(self):
+        cv2.destroyAllWindows()
+        self.receiver.close()
+        self.sender.close()
 
-        ok, frame_bytes = cv2.imencode(".jpg", frame)
-        frame_str = frame_bytes.tobytes()
-        #asyncio.run(ui_sender.send(frame_str))
+    def run(self):
+        # ui_sender = WSSender()
+        # threading.Thread(target=ui_sender.run, daemon=True).start()
 
-        cv2.imshow("frame", frame)
-        if cv2.waitKey(16) == ord('q'):
-            break
-    cv2.destroyAllWindows()
+        # send initial hello
+        self.receiver.connect(frame_addr)
+        print("waiting for first frame...")
+
+        while True:
+            frame = self.receiver.receive()
+            # self.current_state.receive(frame)
+
+            # if self.current_state is not self.single_tracking:
+            #     self.sender.send("0")
+
+            detected, result = markerDetector.detect(frame)
+            if not detected:
+                self.sender.send("0")
+            else:
+                print(result)
+                cmd = analysis(result)
+                self.sender.send(cmd)
+
+            ok, frame_bytes = cv2.imencode(".jpg", frame)
+            frame_str = frame_bytes.tobytes()
+            # asyncio.run(ui_sender.send(frame_str))
+
+            cv2.imshow("frame", frame)
+            if cv2.waitKey(16) == ord('q'):
+                break
 
 
 if __name__ == "__main__":
-    run()
+    a = App()
+    try:
+        a.run()
+    except KeyboardInterrupt:
+        print("keyboard interrupt, execution finish")
+    finally:
+        a.clean_up()

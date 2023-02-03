@@ -129,4 +129,7 @@ dmypy.json
 .pyre/
 
 #intellij
-.idea/
+.idea
+
+# weight too big, download and put into detector folder
+src/detector/yolov3.weights

@@ -1,9 +1,9 @@
 import cv2
 import numpy
-from src.BoundingBox import BoundingBox
+from src.boundingBox import BoundingBox
 
 
-class ManualDetector():
+class ManualDetector:
     def __init__(self):
         self.bbox = BoundingBox()
 
