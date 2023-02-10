@@ -5,7 +5,7 @@ import websockets
 
 ip = "127.0.0.1"
 
-port = 10000
+port = 50000
 
 
 class WSSender:
@@ -34,12 +34,8 @@ class WSSender:
             await asyncio.Future()
 
     def run(self):
-        # time.sleep(1000)
         asyncio.run(self.temp())
-        # loop = asyncio.new_event_loop()
-        # asyncio.set_event_loop(loop)
-        # loop.run_until_complete(start_server)
-        # loop.run_forever()
+
 
 
 if __name__ == "__main__":

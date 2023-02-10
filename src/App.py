@@ -1,3 +1,6 @@
+import asyncio
+import threading
+
 import cv2
 
 # from detector.AutoDetector import AutoDetector
@@ -6,7 +9,7 @@ from src.receiver.UDPReceiver import UDPReceiver
 # from src.detector.ManualDetector import ManualDetector
 from analyzer.Analyzer import analysis
 from src.sender.UDPSender import UDPSender
-# from src.sender.WSSender import WSSender
+from src.sender.WSSender import WSSender
 # from states.detecting import Detecting
 # from states.tracking import Tracking
 # from states.singleTracking import SingleTracking
@@ -27,6 +30,7 @@ class App:
     def __init__(self):
         self.receiver = UDPReceiver()
         self.sender = UDPSender(ctraddr)
+        self.ui_sender = WSSender()
         # self.detector = AutoDetector()
         # self.trackers = []
 
@@ -55,8 +59,8 @@ class App:
         self.sender.close()
 
     def run(self):
-        # ui_sender = WSSender()
-        # threading.Thread(target=ui_sender.run, daemon=True).start()
+        #
+        threading.Thread(target=self.ui_sender.run, daemon=True).start()
 
         # send initial hello
         self.receiver.connect(frame_addr)
@@ -79,7 +83,7 @@ class App:
 
             ok, frame_bytes = cv2.imencode(".jpg", frame)
             frame_str = frame_bytes.tobytes()
-            # asyncio.run(ui_sender.send(frame_str))
+            asyncio.run(self.ui_sender.send(frame_str))
 
             cv2.imshow("frame", frame)
             if cv2.waitKey(16) == ord('q'):
