@@ -1,15 +1,17 @@
+import argparse
 import asyncio
 import threading
+import base64
 
 import cv2
 
 # from detector.AutoDetector import AutoDetector
 # from src.receiver.CameraReceiver import CameraReceiver
-from src.receiver.UDPReceiver import UDPReceiver
+from receiver.UDPReceiver import UDPReceiver
 # from src.detector.ManualDetector import ManualDetector
 from analyzer.Analyzer import analysis
-from src.sender.UDPSender import UDPSender
-from src.sender.WSSender import WSSender
+from sender.UDPSender import UDPSender
+from sender.WSSender import WSSender
 # from states.detecting import Detecting
 # from states.tracking import Tracking
 # from states.singleTracking import SingleTracking
@@ -17,9 +19,6 @@ from src.sender.WSSender import WSSender
 import detector.markerDetector2 as markerDetector
 import boundingBox
 
-ctraddr = ("127.0.0.1", 8002)
-#frame_addr = ("192.168.137.75", 6000)
-frame_addr = ("127.0.0.1", 6000)
 
 
 class App:
@@ -27,9 +26,11 @@ class App:
     fields:
 
     """
-    def __init__(self):
+    def __init__(self, ip):
+        self.ctraddr = (ip, 8002)
+        self.frame_addr = (ip, 6000)
         self.receiver = UDPReceiver()
-        self.sender = UDPSender(ctraddr)
+        self.sender = UDPSender(self.ctraddr)
         self.ui_sender = WSSender()
         # self.detector = AutoDetector()
         # self.trackers = []
@@ -46,24 +47,25 @@ class App:
         # self.mouse_position = None
         # cv2.setMouseCallback("frame", self.mouse_clicked)
 
-    def mouse_clicked(self, event, x, y, flags, param):
-        if event == cv2.EVENT_LBUTTONDOWN:
-            print("mouse clicked")
-            self.mouse_position = (x, y)
-            print(self.mouse_position)
-            self.current_state.mode_switch()
+    # def mouse_clicked(self, event, x, y, flags, param):
+    #     if event == cv2.EVENT_LBUTTONDOWN:
+    #         print("mouse clicked")
+    #         self.mouse_position = (x, y)
+    #         print(self.mouse_position)
+    #         self.current_state.mode_switch()
 
     def clean_up(self):
         cv2.destroyAllWindows()
         self.receiver.close()
         self.sender.close()
 
-    def run(self):
+    async def run(self):
         #
-        threading.Thread(target=self.ui_sender.run, daemon=True).start()
-
+        # threading.Thread(target=self.ui_sender.run, daemon=True).start()
+        # loop = asyncio.get_event_loop()
+        # asyncio.create_task(self.ui_sender.start_server())
         # send initial hello
-        self.receiver.connect(frame_addr)
+        self.receiver.connect(self.frame_addr)
         print("waiting for first frame...")
 
         while True:
@@ -82,18 +84,28 @@ class App:
                 self.sender.send(cmd)
 
             ok, frame_bytes = cv2.imencode(".jpg", frame)
-            frame_str = frame_bytes.tobytes()
-            asyncio.run(self.ui_sender.send(frame_str))
+
+            frame_str = base64.b64encode(frame_bytes.tobytes())
+
+            await self.ui_sender.send(frame_str)
 
             cv2.imshow("frame", frame)
             if cv2.waitKey(16) == ord('q'):
                 break
 
+async def wrapper(a):
+    run_task = asyncio.create_task(a.run())
+    server_task = asyncio.create_task(a.ui_sender.start_server())
+    await asyncio.gather(run_task, server_task)
+
 
 if __name__ == "__main__":
-    a = App()
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-ip", default="127.0.0.1")
+    args = parser.parse_args()
+    a = App(args.ip)
     try:
-        a.run()
+        asyncio.run(wrapper(a))
     except KeyboardInterrupt:
         print("keyboard interrupt, execution finish")
     finally:

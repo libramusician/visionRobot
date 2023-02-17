@@ -6,13 +6,14 @@ import logger.logger as logger
 from receiver.CameraReceiver import CameraReceiver
 from boundingBox import draw
 
-dictionary = cv2.aruco.Dictionary_get(cv2.aruco.DICT_4X4_50)
+dictionary = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_4X4_50)
+# dictionary = cv2.aruco.Dictionary_get(cv2.aruco.DICT_4X4_50)
 
 
 def generate_marker():
     # 200 x 200, 0 - 255
     maker_buffer = numpy.zeros((200, 200), dtype=numpy.uint8)
-    marker = cv2.aruco.drawMarker(dictionary, 0, 200, img=maker_buffer, borderBits=1)
+    marker = cv2.aruco.generateImageMarker(dictionary, 0, 200, img=maker_buffer, borderBits=1)
     cv2.imwrite("marker.png", marker)
 
 
@@ -28,7 +29,7 @@ def generate_marker():
 
 
 @fps.add_fps
-@logger.add_log
+# @logger.add_log
 def detect(frame):
     """
     try to detect the marker on the frame, if detected, draw and return the bounding box with format

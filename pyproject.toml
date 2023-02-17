@@ -1,20 +1,17 @@
-[project]
-name = ""
-version = ""
+[tool.poetry]
+name = "visionrobot"
+version = "0.1.0"
 description = ""
-authors = [
-    {name = "Guanqun", email = "libramusiciandgq@gmail.com"},
-]
-dependencies = [
-    "torch>=1.13.0",
-    "roboflow>=0.2.17",
-]
-requires-python = ">=3.7"
-license = {text = "MIT"}
+authors = ["libra <dongguanqun@126.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+opencv-contrib-python = "^4.7.0.68"
+websockets = "^10.4"
+
 
 [build-system]
-requires = ["pdm-pep517>=1.0.0"]
-build-backend = "pdm.pep517.api"
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
 
-
-[tool.pdm]

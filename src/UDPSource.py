@@ -2,7 +2,7 @@ import socket
 
 import cv2
 
-from src.receiver.CameraReceiver import CameraReceiver
+from receiver.CameraReceiver import CameraReceiver
 
 
 class UDPsource():

@@ -11,8 +11,8 @@ inpHeight = 416  # Height of network's input image
 counter = 0
 path = os.path.dirname(__file__)
 CLASS_FILE = os.path.join(path, "coco.names")
-CONFIG_FILE = os.path.join(path, "yolov3-tiny.cfg")
-WEIGHT_FILE = os.path.join(path, "yolov3-tiny.weights")
+CONFIG_FILE = os.path.join(path, "../../YoloModel/yolov3-tiny.cfg")
+WEIGHT_FILE = os.path.join(path, "../../YoloModel/yolov3-tiny.weights")
 
 
 def post_process(frame, outs):

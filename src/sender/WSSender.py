@@ -19,6 +19,7 @@ class WSSender:
         while True:
             try:
                 data = await link.recv()
+                print("recv data")
                 print(data)
             except websockets.ConnectionClosed:
                 print("connection closed")
@@ -27,16 +28,19 @@ class WSSender:
 
     async def send(self, message):
         for item in self.observers:
+            print(message)
+            print("--------------------")
             await item.send(message)
 
-    async def temp(self):
+    async def start_server(self):
+        print("server start")
         async with websockets.serve(self.handler, ip, port):
             await asyncio.Future()
 
-    def run(self):
-        asyncio.run(self.temp())
+    # def run(self):
+    #     asyncio.run(self.temp())
 
 
 
-if __name__ == "__main__":
-    WSSender().run()
+# if __name__ == "__main__":
+#     WSSender().run()
